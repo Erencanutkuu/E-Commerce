@@ -6,8 +6,8 @@ services:
     container_name: atlas-postgres-auth
     environment:
       POSTGRES_DB: authdb
-      POSTGRES_USER: atlas
-      POSTGRES_PASSWORD: atlaspass
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5433:5432"
     volumes:
@@ -15,7 +15,7 @@ services:
     networks:
       - atlasnet
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U atlas -d authdb"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d authdb"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -25,8 +25,8 @@ services:
     container_name: atlas-postgres-product
     environment:
       POSTGRES_DB: productdb
-      POSTGRES_USER: atlas
-      POSTGRES_PASSWORD: atlaspass
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5434:5432"
     volumes:
@@ -34,7 +34,7 @@ services:
     networks:
       - atlasnet
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U atlas -d productdb"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d productdb"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -44,8 +44,8 @@ services:
     container_name: atlas-postgres-order
     environment:
       POSTGRES_DB: orderdb
-      POSTGRES_USER: atlas
-      POSTGRES_PASSWORD: atlaspass
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5435:5432"
     volumes:
@@ -53,7 +53,7 @@ services:
     networks:
       - atlasnet
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U atlas -d orderdb"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d orderdb"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -63,8 +63,8 @@ services:
     container_name: atlas-postgres-payment
     environment:
       POSTGRES_DB: paymentdb
-      POSTGRES_USER: atlas
-      POSTGRES_PASSWORD: atlaspass
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5436:5432"
     volumes:
@@ -72,7 +72,7 @@ services:
     networks:
       - atlasnet
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U atlas -d paymentdb"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d paymentdb"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -96,8 +96,8 @@ services:
     image: rabbitmq:3-management-alpine
     container_name: atlas-rabbitmq
     environment:
-      RABBITMQ_DEFAULT_USER: atlas
-      RABBITMQ_DEFAULT_PASS: atlaspass
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -117,16 +117,16 @@ services:
       - "8081:8081"
     environment:
       DB_URL: jdbc:postgresql://postgres-auth:5432/authdb
-      DB_USERNAME: atlas
-      DB_PASSWORD: atlaspass
+      DB_USERNAME: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      JWT_SECRET: atlascommerce-super-secret-key-for-jwt-token-signing-2024
-      JWT_ACCESS_EXPIRATION: 900000
-      JWT_REFRESH_EXPIRATION: 604800000
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_ACCESS_EXPIRATION: ${JWT_ACCESS_EXPIRATION}
+      JWT_REFRESH_EXPIRATION: ${JWT_REFRESH_EXPIRATION}
     depends_on:
       postgres-auth:
-        condition: service_healthy   #saglıklımı diye kontrol eder saglıklı olmadan girerse sıkıntı
+        condition: service_healthy
       redis:
         condition: service_healthy
     networks:
@@ -139,8 +139,8 @@ services:
       - "8082:8082"
     environment:
       DB_URL: jdbc:postgresql://postgres-product:5432/productdb
-      DB_USERNAME: atlas
-      DB_PASSWORD: atlaspass
+      DB_USERNAME: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
       REDIS_HOST: redis
       REDIS_PORT: 6379
     depends_on:
@@ -158,12 +158,12 @@ services:
       - "8083:8083"
     environment:
       DB_URL: jdbc:postgresql://postgres-order:5432/orderdb
-      DB_USERNAME: atlas
-      DB_PASSWORD: atlaspass
+      DB_USERNAME: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_PORT: 5672
-      RABBITMQ_USERNAME: atlas
-      RABBITMQ_PASSWORD: atlaspass
+      RABBITMQ_USERNAME: ${RABBITMQ_USER}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASS}
     depends_on:
       postgres-order:
         condition: service_healthy
@@ -179,12 +179,12 @@ services:
       - "8084:8084"
     environment:
       DB_URL: jdbc:postgresql://postgres-payment:5432/paymentdb
-      DB_USERNAME: atlas
-      DB_PASSWORD: atlaspass
+      DB_USERNAME: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_PORT: 5672
-      RABBITMQ_USERNAME: atlas
-      RABBITMQ_PASSWORD: atlaspass
+      RABBITMQ_USERNAME: ${RABBITMQ_USER}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASS}
     depends_on:
       postgres-payment:
         condition: service_healthy
@@ -201,8 +201,8 @@ services:
     environment:
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_PORT: 5672
-      RABBITMQ_USERNAME: atlas
-      RABBITMQ_PASSWORD: atlaspass
+      RABBITMQ_USERNAME: ${RABBITMQ_USER}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASS}
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -258,7 +258,7 @@ services:
       - "3000:3000"
     environment:
       GF_SECURITY_ADMIN_USER: admin
-      GF_SECURITY_ADMIN_PASSWORD: atlaspass
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD}
     volumes:
       - grafana_data:/var/lib/grafana
     depends_on:
