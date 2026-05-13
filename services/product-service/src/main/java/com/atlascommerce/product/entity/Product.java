@@ -35,7 +35,7 @@ public class Product {
     @Version
     private Long version;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY) // lazy ile belli yerlerde kullanılıyor
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 }
